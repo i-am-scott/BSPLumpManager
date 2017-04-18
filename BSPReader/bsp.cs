@@ -14,21 +14,26 @@ namespace BSPLumpManager.BSPReader
         protected bool headerReady;
         protected Header header;
         protected string FileName;
+        protected string FilePath;
 
-        public BSP(string fileName)
+        protected List<KeyValueGroup> entities = new List<KeyValueGroup>();
+
+        public BSP(string file_path)
         {
-            if (!File.Exists(fileName))
+            if (!File.Exists(file_path))
                 return;
 
-            Directory.CreateDirectory("data/" + fileName.Substring(0, fileName.Length - 3));
-            CreateHeader(fileName);
+            FilePath = file_path;
+            FileName = Path.GetFileName(file_path);
+
+            Directory.CreateDirectory("data/" + FileName);
+            CreateHeader(file_path);
         }
 
-        private void CreateHeader(string fileName)
+        private void CreateHeader(string file_path)
         {
-            using (BinaryReader br = new BinaryReader(File.Open(fileName, FileMode.Open, FileAccess.Read)))
+            using (BinaryReader br = new BinaryReader(File.Open(file_path, FileMode.Open, FileAccess.Read)))
             {
-                FileName = fileName;
                 header   = new Header()
                 {
                     ident = Encoding.ASCII.GetString(br.ReadBytes(4)),
@@ -103,7 +108,7 @@ namespace BSPLumpManager.BSPReader
         public T[] DumpLump<T>() where T : new()
         {
             T[] lumpdata     = GetLump<T>();
-            string file_path = "data/" + FileName.Substring(0, FileName.Length - 3) + "/" + typeof(T).Name + ".json";
+            string file_path = "data/" + FileName + "/" + typeof(T).Name + ".json";
             string data;
 
             data = JsonConvert.SerializeObject(lumpdata);
@@ -112,7 +117,13 @@ namespace BSPLumpManager.BSPReader
         }
 
         public List<KeyValueGroup> GetEntities()
-            => Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
+        {
+            if (entities.Count > 0)
+                return entities;
+
+            entities = Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
+            return entities;
+        }
  
         public override string ToString()
         {

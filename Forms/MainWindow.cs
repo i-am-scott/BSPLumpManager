@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace BSPLumpManager
 {
@@ -15,17 +16,15 @@ namespace BSPLumpManager
         public MainWindow()
         {
             InitializeComponent();
-            ent_list.CheckBoxes = true;
+            open_file.FileOk += Open_file_FileOk;
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            Task.Run(() => {
-                LoadMapData();
-            });
+
         }
 
-        private void LoadMapData( string map_path = "gm_flatgrass.bsp")
+        private void LoadMapData( string map_path )
         {
             map = new BSP(map_path);
 
@@ -55,7 +54,6 @@ namespace BSPLumpManager
                 item.SubItems.Add(name);
 
                 items[i] = item;
-
                 Console.WriteLine("{0:D4}|\t{1}\t{2}", ent.id, hammerid, name);
             }
 
@@ -65,6 +63,24 @@ namespace BSPLumpManager
             }));
         }
 
+        private void button_open_Click(object sender, EventArgs e)
+        {
+            open_file.ShowDialog();
+        }
+
+        private void Open_file_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            string file_path = open_file.FileName;
+            if (string.IsNullOrEmpty(file_path) || Path.GetExtension(file_path) != ".bsp")
+                return;
+
+            Console.WriteLine("Loading bsp from {0}", file_path);
+            textbox_filepath.Text = file_path;
+
+            Task.Run(() => {
+                LoadMapData(file_path);
+            });
+        }
     }
 
 }

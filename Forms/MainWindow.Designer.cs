@@ -35,6 +35,8 @@
             this.open_file = new System.Windows.Forms.OpenFileDialog();
             this.textbox_filepath = new System.Windows.Forms.TextBox();
             this.button_open = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // col_checked
@@ -51,25 +53,29 @@
             // 
             // ent_list
             // 
+            this.ent_list.CheckBoxes = true;
             this.ent_list.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.col_checked,
             this.col_hammerid,
             this.col_name});
-            this.ent_list.Location = new System.Drawing.Point(1, 38);
+            this.ent_list.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.ent_list.Location = new System.Drawing.Point(0, 51);
             this.ent_list.Name = "ent_list";
-            this.ent_list.Size = new System.Drawing.Size(384, 473);
+            this.ent_list.Size = new System.Drawing.Size(384, 460);
             this.ent_list.TabIndex = 0;
             this.ent_list.UseCompatibleStateImageBehavior = false;
             this.ent_list.View = System.Windows.Forms.View.Details;
             // 
             // open_file
             // 
-            this.open_file.FileName = "openFileDialog1";
+            this.open_file.FileName = "Select BSP File";
+            this.open_file.Filter = "Valve BSP File(.bsp)|*.bsp";
             // 
             // textbox_filepath
             // 
             this.textbox_filepath.Location = new System.Drawing.Point(12, 12);
             this.textbox_filepath.Name = "textbox_filepath";
+            this.textbox_filepath.ReadOnly = true;
             this.textbox_filepath.Size = new System.Drawing.Size(266, 20);
             this.textbox_filepath.TabIndex = 1;
             // 
@@ -81,21 +87,36 @@
             this.button_open.TabIndex = 2;
             this.button_open.Text = "Open Map";
             this.button_open.UseVisualStyleBackColor = true;
+            this.button_open.Click += new System.EventHandler(this.button_open_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.textbox_filepath);
+            this.panel1.Controls.Add(this.button_open);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(384, 45);
+            this.panel1.TabIndex = 3;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 511);
-            this.Controls.Add(this.button_open);
-            this.Controls.Add(this.textbox_filepath);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.ent_list);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "MainWindow";
+            this.ShowIcon = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BSPLump Editor";
             this.Load += new System.EventHandler(this.MainWindow_Load);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -108,6 +129,7 @@
         private System.Windows.Forms.OpenFileDialog open_file;
         private System.Windows.Forms.TextBox textbox_filepath;
         private System.Windows.Forms.Button button_open;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 
