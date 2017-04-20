@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A01B38F8-1B30-4B1E-AF21-E642D7D953EA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>BSPLumpManager</RootNamespace>
     <AssemblyName>BSPLumpManager</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>

@@ -8,6 +8,7 @@ namespace BSPLumpManager.KVP
     {
         public int id;
         public string raw;
+        public bool enabled = true;
         public Dictionary<string, string> keys = new Dictionary<string, string>();
     }
 

@@ -1,7 +1,6 @@
 ﻿using BSPLumpManager.BSPReader;
 using BSPLumpManager.KVP;
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.IO;
@@ -11,38 +10,44 @@ namespace BSPLumpManager
 
     public partial class MainWindow : Form
     {
+
         public static BSP map;
 
         public MainWindow()
         {
             InitializeComponent();
-            open_file.FileOk += Open_file_FileOk;
-        }
 
-        private void MainWindow_Load(object sender, EventArgs e)
-        {
-
+            open_file.FileOk     += Open_file_FileOk;
+            ent_list.ItemChecked += Ent_list_ItemChecked;
         }
 
         private void LoadMapData( string map_path )
         {
-            map = new BSP(map_path);
-
-            Console.WriteLine(map);
-            Console.WriteLine("Loading KeyValues");
-
-            List<KeyValueGroup> ents = map.GetEntities();
-            ListViewItem[] items     = new ListViewItem[ents.Count];
-
-            for (int i = 0; i < ents.Count; i++)
+            try
             {
-                KeyValueGroup ent = ents[i];
+                map = new BSP(map_path);
+            }
+            catch ( Exception e )
+            {
+                MessageBox.Show(e.Message, "Invalid BSP File");
+                return;
+            }
+
+
+            map.GetEntities();
+            ListViewItem[] items     = new ListViewItem[map.entities.Count];
+
+            for (int i = 0; i < map.entities.Count; i++)
+            {
+                KeyValueGroup ent = map.entities[i];
+                ent.enabled       = check_all.Checked;
+
                 ListViewItem item = new ListViewItem()
                 {
                     Text        = ent.id.ToString(),
                     Tag         = ent,
                     ToolTipText = ent.raw,
-                    Checked     = true
+                    Checked     = check_all.Checked
                 };
 
                 string hammerid = "UNKNOWN";
@@ -54,13 +59,30 @@ namespace BSPLumpManager
                 item.SubItems.Add(name);
 
                 items[i] = item;
-                Console.WriteLine("{0:D4}|\t{1}\t{2}", ent.id, hammerid, name);
             }
 
             Invoke(new Action(() =>
             {
                 ent_list.Items.AddRange(items);
+                ent_list.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                ent_list.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             }));
+        }
+
+
+        private void SaveMapData()
+        {
+            if (map == null)
+                return;
+
+            Task.Run(() => {
+                map.SplitEntities();
+            });
+        }
+
+        private void button_create_Click(object sender, EventArgs e)
+        {
+            SaveMapData();
         }
 
         private void button_open_Click(object sender, EventArgs e)
@@ -74,13 +96,37 @@ namespace BSPLumpManager
             if (string.IsNullOrEmpty(file_path) || Path.GetExtension(file_path) != ".bsp")
                 return;
 
-            Console.WriteLine("Loading bsp from {0}", file_path);
             textbox_filepath.Text = file_path;
+
+            ent_list.Items.Clear();
 
             Task.Run(() => {
                 LoadMapData(file_path);
             });
         }
+
+        private void Ent_list_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            KeyValueGroup ent = (KeyValueGroup)e.Item.Tag;
+            if(ent.id == 0)
+            {
+                ent.enabled = true;
+                e.Item.Checked = true;
+                return;
+            }
+
+            ent.enabled = e.Item.Checked;
+        }
+
+        private void check_all_CheckedChanged(object sender, EventArgs e)
+        {
+            for (int i = 0; i < ent_list.Items.Count; i++)
+            {
+                map.entities[i].enabled   = i == 0 ? true : check_all.Checked;
+                ent_list.Items[i].Checked = map.entities[i].enabled;
+            }
+        }
+
     }
 
 }

@@ -11,8 +11,6 @@ namespace BSPLumpManager
         [STAThread]
         static void Main()
         {
-            Console.Title = "BSPLump Editor";
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainWindow());

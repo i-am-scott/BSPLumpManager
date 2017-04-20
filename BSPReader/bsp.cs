@@ -16,7 +16,7 @@ namespace BSPLumpManager.BSPReader
         protected string FileName;
         protected string FilePath;
 
-        protected List<KeyValueGroup> entities = new List<KeyValueGroup>();
+        public List<KeyValueGroup> entities = new List<KeyValueGroup>();
 
         public BSP(string file_path)
         {
@@ -34,11 +34,18 @@ namespace BSPLumpManager.BSPReader
         {
             using (BinaryReader br = new BinaryReader(File.Open(file_path, FileMode.Open, FileAccess.Read)))
             {
+
+                string identity = Encoding.ASCII.GetString(br.ReadBytes(4));
+                if(identity != "VBSP")
+                {
+                    throw new InvalidDataException("File is not a BSP or is malformed.");
+                }
+
                 header   = new Header()
                 {
-                    ident = Encoding.ASCII.GetString(br.ReadBytes(4)),
+                    ident   = identity,
                     version = br.ReadInt32(),
-                    lumps = new lump_t[64]
+                    lumps   = new lump_t[64]
                 };
 
                 for (int I = 0; I < header.lumps.Length; I++)
@@ -123,6 +130,54 @@ namespace BSPLumpManager.BSPReader
 
             entities = Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
             return entities;
+        }
+
+        private byte[] GetNewLumps()
+        {
+            string keep_text = "";
+            for (int i = 0; i < entities.Count; i++)
+            {
+                var ent    = entities[i];
+                keep_text += ent.enabled  ? ent.raw : "";
+            }
+            return Encoding.ASCII.GetBytes(keep_text);
+        }
+
+        public void SplitEntities()
+        {
+            using (FileStream f = File.OpenRead(FilePath))
+            {
+                using (FileStream nf = File.Create(FilePath.Replace(".bsp", "_new.bsp")))
+                {
+                    f.CopyTo(nf);
+                    f.Close();
+
+                    lump_t ent_lump = header.lumps[0];
+
+                    byte[] clean_chunk = new byte[ent_lump.chunk.Length];
+                    Array.Clear(clean_chunk, 0, clean_chunk.Length);
+
+                    byte[] keep = GetNewLumps();
+                    keep.CopyTo(clean_chunk,0);
+
+                    using (BinaryWriter lmp_br = new BinaryWriter(File.Open(FilePath.Replace(".bsp", "_new_l_0.lmp"), FileMode.Create)))
+                    {
+                        lmp_br.Write(0x14);
+                        lmp_br.Write(0);
+                        lmp_br.Write(ent_lump.version);
+                        lmp_br.Write(ent_lump.filelength);
+                        lmp_br.Write(this.header.mapRevision);
+
+                        lmp_br.BaseStream.Position = 0x14;
+                        lmp_br.BaseStream.Write(ent_lump.chunk,0,ent_lump.chunk.Length);
+                        lmp_br.Close();
+                    }
+
+                    nf.Position = ent_lump.fileoffset;
+                    nf.Write(clean_chunk, 0, clean_chunk.Length);
+                    nf.Close();
+                }
+            }
         }
  
         public override string ToString()
