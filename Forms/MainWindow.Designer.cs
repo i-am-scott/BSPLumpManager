@@ -36,8 +36,8 @@
             this.textbox_filepath = new System.Windows.Forms.TextBox();
             this.button_open = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.check_all = new System.Windows.Forms.CheckBox();
             this.button_create = new System.Windows.Forms.Button();
+            this.check_all = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -121,6 +121,17 @@
             this.splitContainer1.SplitterDistance = 48;
             this.splitContainer1.TabIndex = 3;
             // 
+            // button_create
+            // 
+            this.button_create.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button_create.Location = new System.Drawing.Point(133, 20);
+            this.button_create.Name = "button_create";
+            this.button_create.Size = new System.Drawing.Size(87, 28);
+            this.button_create.TabIndex = 4;
+            this.button_create.Text = "Split Lump";
+            this.button_create.UseVisualStyleBackColor = true;
+            this.button_create.Click += new System.EventHandler(this.button_create_Click);
+            // 
             // check_all
             // 
             this.check_all.AutoSize = true;
@@ -133,17 +144,6 @@
             this.check_all.Text = "Select All";
             this.check_all.UseVisualStyleBackColor = true;
             this.check_all.CheckedChanged += new System.EventHandler(this.check_all_CheckedChanged);
-            // 
-            // button_create
-            // 
-            this.button_create.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_create.Location = new System.Drawing.Point(133, 20);
-            this.button_create.Name = "button_create";
-            this.button_create.Size = new System.Drawing.Size(87, 28);
-            this.button_create.TabIndex = 4;
-            this.button_create.Text = "Split Lump";
-            this.button_create.UseVisualStyleBackColor = true;
-            this.button_create.Click += new System.EventHandler(this.button_create_Click);
             // 
             // MainWindow
             // 

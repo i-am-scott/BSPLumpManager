@@ -33,7 +33,6 @@ namespace BSPLumpManager
                 return;
             }
 
-
             map.GetEntities();
             ListViewItem[] items     = new ListViewItem[map.entities.Count];
 
@@ -126,7 +125,6 @@ namespace BSPLumpManager
                 ent_list.Items[i].Checked = map.entities[i].enabled;
             }
         }
-
     }
 
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace BSPLumpManager.BSPReader
 {
@@ -34,33 +35,33 @@ namespace BSPLumpManager.BSPReader
             {
 
                 string identity = Encoding.ASCII.GetString(br.ReadBytes(4));
-                if(identity != "VBSP")
+                if (identity != "VBSP")
                 {
                     throw new InvalidDataException("File is not a BSP or is malformed.");
                 }
 
-                header   = new Header()
+                header = new Header()
                 {
-                    ident   = identity,
+                    ident = identity,
                     version = br.ReadInt32(),
-                    lumps   = new lump_t[64]
+                    lumps = new lump_t[64]
                 };
 
                 for (int I = 0; I < header.lumps.Length; I++)
                 {
                     lump_t lump = new lump_t()
                     {
-                        fileoffset         = br.ReadInt32(),
-                        filelength         = br.ReadInt32(),
-                        version            = br.ReadInt32(),
+                        fileoffset = br.ReadInt32(),
+                        filelength = br.ReadInt32(),
+                        version = br.ReadInt32(),
                         uncompressedLength = br.ReadBytes(4)
                     };
 
                     if (lump.fileoffset > 0 && lump.filelength > 0)
                     {
-                        long curPosition       = br.BaseStream.Position;
+                        long curPosition = br.BaseStream.Position;
                         br.BaseStream.Position = lump.fileoffset;
-                        lump.chunk             = br.ReadBytes(lump.filelength-1);
+                        lump.chunk = br.ReadBytes(lump.filelength - 1);
                         br.BaseStream.Position = curPosition;
                     }
                     header.lumps[I] = lump;
@@ -76,7 +77,7 @@ namespace BSPLumpManager.BSPReader
         {
             if (!headerReady) return null;
 
-            LumpType lt   = typeof(T).GetCustomAttribute<SetLumpType>().lump_t;
+            LumpType lt = typeof(T).GetCustomAttribute<SetLumpType>().lump_t;
             int chunkSize = typeof(T).GetCustomAttribute<SetLumpType>().bytes;
 
             lump_t lumpdefinition = header.lumps[(int)lt];
@@ -84,9 +85,9 @@ namespace BSPLumpManager.BSPReader
             if (lumpdefinition.chunk.Length == 0)
                 return default(T[]);
 
-            byte[] chunk   = lumpdefinition.chunk;
+            byte[] chunk = lumpdefinition.chunk;
             int chunkCount = chunk.Length / chunkSize;
-            T[] chunks     = new T[chunkCount];
+            T[] chunks = new T[chunkCount];
 
             using (BinaryReader br = new BinaryReader(new MemoryStream()))
             {
@@ -110,8 +111,14 @@ namespace BSPLumpManager.BSPReader
             return chunks;
         }
 
-        public List<KeyValueGroup> GetEntities() => 
-            entities.Count > 0 ? entities : Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
+        public List<KeyValueGroup> GetEntities()
+        {
+            if (entities.Count > 0)
+                return entities;
+
+            entities = Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
+            return entities;
+        }
 
         private byte[] GetNewLumps()
         {
