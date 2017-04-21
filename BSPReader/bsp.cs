@@ -1,5 +1,4 @@
 ﻿using BSPLumpManager.KVP;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +25,6 @@ namespace BSPLumpManager.BSPReader
             FilePath = file_path;
             FileName = Path.GetFileName(file_path);
 
-            Directory.CreateDirectory("data/" + FileName);
             CreateHeader(file_path);
         }
 
@@ -76,7 +74,7 @@ namespace BSPLumpManager.BSPReader
 
         public T[] GetLump<T>() where T : new()
         {
-            if (!headerReady) return default(T[]);
+            if (!headerReady) return null;
 
             LumpType lt   = typeof(T).GetCustomAttribute<SetLumpType>().lump_t;
             int chunkSize = typeof(T).GetCustomAttribute<SetLumpType>().bytes;
@@ -112,25 +110,8 @@ namespace BSPLumpManager.BSPReader
             return chunks;
         }
 
-        public T[] DumpLump<T>() where T : new()
-        {
-            T[] lumpdata     = GetLump<T>();
-            string file_path = "data/" + FileName + "/" + typeof(T).Name + ".json";
-            string data;
-
-            data = JsonConvert.SerializeObject(lumpdata);
-            File.WriteAllText(file_path, data, Encoding.Default);
-            return lumpdata;
-        }
-
-        public List<KeyValueGroup> GetEntities()
-        {
-            if (entities.Count > 0)
-                return entities;
-
-            entities = Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
-            return entities;
-        }
+        public List<KeyValueGroup> GetEntities() => 
+            entities.Count > 0 ? entities : Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
 
         private byte[] GetNewLumps()
         {
@@ -180,15 +161,13 @@ namespace BSPLumpManager.BSPReader
             }
         }
  
-        public override string ToString()
-        {
-            if (string.IsNullOrEmpty(FileName)) return "[BSPObject Empty]";
-
-            return string.Format("[BSPObject: {0}, {1}, v{2}, r{3}]",
+        public override string ToString() =>
+            string.IsNullOrEmpty(FileName) ?  "[BSPObject Empty]" :
+            string.Format("[BSPObject: {0}, {1}, v{2}, r{3}]",
                 FileName,
                 header.ident,
                 header.version,
                 header.mapRevision);
-        }
+
     }
 }
