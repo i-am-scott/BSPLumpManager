@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 
@@ -57,11 +56,7 @@ namespace BSPLumpManager.KVP
                         kv_group.name = val;
                     if (!kv_group.keys.ContainsKey(key))
                         kv_group.keys.Add(key, val);
-
-                    Console.WriteLine(key);
-
                 }
-
                 kvp_groups.Add(kv_group);
             }
 

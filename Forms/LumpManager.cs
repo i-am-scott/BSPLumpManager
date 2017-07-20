@@ -20,6 +20,7 @@ namespace BSPLumpManager.Forms
             list_ents.BackgroundColor = BackColor;
             list_ents.GridColor = BackColor;
             list_ents.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            list_ents.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
         }
 
         private void LumpManager_Load(object sender, EventArgs e)
@@ -51,6 +52,8 @@ namespace BSPLumpManager.Forms
             Invoke(new Action(() =>
             {
                 list_ents.DataSource = map.entities;
+                list_ents.PerformLayout();
+
                 loading.Visible = false;
                 list_ents.Visible = true;
             }));
@@ -62,6 +65,7 @@ namespace BSPLumpManager.Forms
                 return;
 
             loading.Visible = true;
+
             Task.Run(() => {
                 map.SplitEntities();
                 Invoke(new Action(() =>
@@ -106,7 +110,7 @@ namespace BSPLumpManager.Forms
         private void List_ents_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if(e.ColumnIndex == 0)
-                MessageBox.Show(map.entities[e.ColumnIndex].raw, "Raw Entity Key Values");
+                MessageBox.Show(map.entities[e.RowIndex].raw, "Raw Entity Key Values");
         }
 
         private void link_github_Click(object sender, EventArgs e)
