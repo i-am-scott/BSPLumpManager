@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
 
 namespace BSPLumpManager.BSPReader
 {
@@ -33,82 +30,38 @@ namespace BSPLumpManager.BSPReader
         {
             using (BinaryReader br = new BinaryReader(File.Open(file_path, FileMode.Open, FileAccess.Read)))
             {
-
                 string identity = Encoding.ASCII.GetString(br.ReadBytes(4));
                 if (identity != "VBSP")
-                {
                     throw new InvalidDataException("File is not a BSP or is malformed.");
-                }
 
                 header = new Header()
                 {
                     ident = identity,
                     version = br.ReadInt32(),
-                    lumps = new lump_t[64]
                 };
 
-                for (int I = 0; I < header.lumps.Length; I++)
+                lump_t lump = new lump_t()
                 {
-                    lump_t lump = new lump_t()
-                    {
-                        fileoffset = br.ReadInt32(),
-                        filelength = br.ReadInt32(),
-                        version = br.ReadInt32(),
-                        uncompressedLength = br.ReadBytes(4)
-                    };
+                    fileoffset = br.ReadInt32(),
+                    filelength = br.ReadInt32(),
+                    version = br.ReadInt32(),
+                    uncompressedLength = br.ReadBytes(4)
+                };
 
-                    if (lump.fileoffset > 0 && lump.filelength > 0)
-                    {
-                        long curPosition = br.BaseStream.Position;
-                        br.BaseStream.Position = lump.fileoffset;
-                        lump.chunk = br.ReadBytes(lump.filelength - 1);
-                        br.BaseStream.Position = curPosition;
-                    }
-                    header.lumps[I] = lump;
+                if (lump.fileoffset > 0 && lump.filelength > 0)
+                {
+                    long curPosition = br.BaseStream.Position;
+                    br.BaseStream.Position = lump.fileoffset;
+                    lump.chunk = br.ReadBytes(lump.filelength - 1);
+                    br.BaseStream.Position = curPosition;
                 }
 
                 header.mapRevision = br.ReadInt32();
+                header.entlump = lump;
+
                 br.Close();
                 headerReady = true;
             }
-        }
-
-        public T[] GetLump<T>() where T : new()
-        {
-            if (!headerReady) return null;
-
-            LumpType lt = typeof(T).GetCustomAttribute<SetLumpType>().lump_t;
-            int chunkSize = typeof(T).GetCustomAttribute<SetLumpType>().bytes;
-
-            lump_t lumpdefinition = header.lumps[(int)lt];
-
-            if (lumpdefinition.chunk.Length == 0)
-                return default(T[]);
-
-            byte[] chunk = lumpdefinition.chunk;
-            int chunkCount = chunk.Length / chunkSize;
-            T[] chunks = new T[chunkCount];
-
-            using (BinaryReader br = new BinaryReader(new MemoryStream()))
-            {
-                br.BaseStream.Write(chunk, 0, chunk.Length);
-                br.BaseStream.Position = 0;
-
-                for (int I = 0; I < chunkCount; I++)
-                {
-                    byte[] curBuffer = br.ReadBytes(chunkSize);
-
-                    IntPtr intPtr = Marshal.AllocHGlobal(curBuffer.Length);
-                    Marshal.Copy(curBuffer, 0, intPtr, curBuffer.Length);
-
-                    T LumpStruct = (T)Marshal.PtrToStructure(intPtr, typeof(T));
-                    chunks[I] = LumpStruct;
-
-                    Marshal.FreeHGlobal(intPtr);
-                }
-                br.Close();
-            }
-            return chunks;
         }
 
         public List<KeyValueGroup> GetEntities()
@@ -116,7 +69,7 @@ namespace BSPLumpManager.BSPReader
             if (entities.Count > 0)
                 return entities;
 
-            entities = Parser.Parse(Encoding.ASCII.GetString(header.lumps[0].chunk));
+            entities = Parser.Parse(Encoding.ASCII.GetString(header.entlump.chunk));
             return entities;
         }
 
@@ -140,7 +93,7 @@ namespace BSPLumpManager.BSPReader
                     f.CopyTo(nf);
                     f.Close();
 
-                    lump_t ent_lump = header.lumps[0];
+                    lump_t ent_lump = header.entlump;
 
                     byte[] clean_chunk = new byte[ent_lump.chunk.Length];
                     Array.Clear(clean_chunk, 0, clean_chunk.Length);
@@ -154,7 +107,7 @@ namespace BSPLumpManager.BSPReader
                         lmp_br.Write(0);
                         lmp_br.Write(ent_lump.version);
                         lmp_br.Write(ent_lump.filelength);
-                        lmp_br.Write(this.header.mapRevision);
+                        lmp_br.Write(header.mapRevision);
 
                         lmp_br.BaseStream.Position = 0x14;
                         lmp_br.BaseStream.Write(ent_lump.chunk,0,ent_lump.chunk.Length);

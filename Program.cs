@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BSPLumpManager.Forms;
+using System;
 using System.Windows.Forms;
 
 namespace BSPLumpManager
@@ -13,7 +14,7 @@ namespace BSPLumpManager
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+            Application.Run(new LumpManager());
         }
     }
 }
