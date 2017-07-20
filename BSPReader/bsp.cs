@@ -1,8 +1,8 @@
 ﻿using BSPLumpManager.KVP;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.ComponentModel;
 
 namespace BSPLumpManager.BSPReader
 {
@@ -13,7 +13,7 @@ namespace BSPLumpManager.BSPReader
         protected string FileName;
         protected string FilePath;
 
-        public List<KeyValueGroup> entities = new List<KeyValueGroup>();
+        public BindingList<KeyValueGroup> entities;
 
         public BSP(string file_path)
         {
@@ -64,12 +64,14 @@ namespace BSPLumpManager.BSPReader
             }
         }
 
-        public List<KeyValueGroup> GetEntities()
+        public BindingList<KeyValueGroup> GetEntities()
         {
-            if (entities.Count > 0)
+            if (entities != null && entities.Count > 0)
                 return entities;
 
-            entities = Parser.Parse(Encoding.ASCII.GetString(header.entlump.chunk));
+            var ents = Parser.Parse(Encoding.ASCII.GetString(header.entlump.chunk));
+            entities = new BindingList<KeyValueGroup>(ents);
+
             return entities;
         }
 

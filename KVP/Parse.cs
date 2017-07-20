@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 
 namespace BSPLumpManager.KVP
@@ -7,7 +9,16 @@ namespace BSPLumpManager.KVP
     {
         public int id;
         public string raw;
-        public bool enabled = true;
+
+        [DisplayName("enabled")]
+        public bool enabled { get; set; }
+
+        [DisplayName("hammerid")]
+        public string hammerid { get; set; }
+
+        [DisplayName("name")]
+        public string name { get; set; }
+
         public Dictionary<string, string> keys = new Dictionary<string, string>();
     }
 
@@ -25,10 +36,11 @@ namespace BSPLumpManager.KVP
 
             foreach (Match match in r.Matches(contents))
             {
-                string content         = match.ToString();
+                string content = match.ToString();
                 KeyValueGroup kv_group = new KeyValueGroup() {
-                    id  = kvp_groups.Count,
-                    raw = content
+                    id = kvp_groups.Count,
+                    raw = content,
+                    enabled = false
                 };
 
                 foreach (Match tuple in pair_r.Matches(content))
@@ -39,12 +51,21 @@ namespace BSPLumpManager.KVP
                     key = key.Substring(1, key.Length - 2);
                     val = val.Substring(1, val.Length - 2);
 
+                    if (key == "hammerid")
+                        kv_group.hammerid = val;
+                    if (key == "classname")
+                        kv_group.name = val;
                     if (!kv_group.keys.ContainsKey(key))
                         kv_group.keys.Add(key, val);
+
+                    Console.WriteLine(key);
+
                 }
 
                 kvp_groups.Add(kv_group);
             }
+
+            kvp_groups[0].enabled = true;
             return kvp_groups;
         }
     }

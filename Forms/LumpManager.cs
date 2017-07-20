@@ -15,13 +15,17 @@ namespace BSPLumpManager.Forms
         public LumpManager()
         {
             InitializeComponent();
+
+            list_ents.ForeColor = ForeColor;
+            list_ents.BackgroundColor = BackColor;
+            list_ents.GridColor = BackColor;
+            list_ents.BorderStyle = System.Windows.Forms.BorderStyle.None;
         }
 
         private void LumpManager_Load(object sender, EventArgs e)
         {
-            list_ents.ForeColor = ForeColor;
-            list_ents.BackColor = BackColor;
             open_file.FileOk += Open_file_FileOk;
+            list_ents.CellContentClick += List_ents_CellContentClick;
         }
 
         private void LoadMapData(string map_path)
@@ -37,36 +41,16 @@ namespace BSPLumpManager.Forms
             }
 
             map.GetEntities();
-            ListViewItem[] items = new ListViewItem[map.entities.Count];
 
-            for (int i = 0; i < map.entities.Count; i++)
+            for (var i = 0; i < map.entities.Count; i++)
             {
                 KeyValueGroup ent = map.entities[i];
                 ent.enabled = check_all.Checked;
-
-                ListViewItem item = new ListViewItem()
-                {
-                    Text = ent.id.ToString(),
-                    Tag = ent,
-                    ToolTipText = ent.raw.Replace("\\n", " "),
-                    Checked = check_all.Checked
-                };
-
-                string hammerid = "UNKNOWN";
-                ent.keys.TryGetValue("hammerid", out hammerid);
-                item.SubItems.Add(hammerid);
-
-                string name = "Unknown Name";
-                ent.keys.TryGetValue("classname", out name);
-                ent.keys.TryGetValue("targetname", out string target );
-                
-                item.SubItems.Add($"{name} ({ target ?? "no name"})");               
-                items[i] = item;
             }
 
             Invoke(new Action(() =>
             {
-                list_ents.Items.AddRange(items);
+                list_ents.DataSource = map.entities;
                 loading.Visible = false;
                 list_ents.Visible = true;
             }));
@@ -80,7 +64,6 @@ namespace BSPLumpManager.Forms
             loading.Visible = true;
             Task.Run(() => {
                 map.SplitEntities();
-
                 Invoke(new Action(() =>
                 {
                     loading.Visible = false;
@@ -98,7 +81,7 @@ namespace BSPLumpManager.Forms
             loading.Visible = true;
             textbox_filepath.Text = file_path;
 
-            list_ents.Items.Clear();
+            list_ents.Rows.Clear();
             Task.Run(() => {
                 LoadMapData(file_path);
             });
@@ -114,24 +97,16 @@ namespace BSPLumpManager.Forms
  
         private void check_all_CheckedChanged(object sender, EventArgs e)
         {
-            for (int i = 0; i < list_ents.Items.Count; i++)
+            for (int i = 0; i < map.entities.Count; i++)
             {
                 map.entities[i].enabled   = i == 0 ? true : check_all.Checked;
-                list_ents.Items[i].Checked = map.entities[i].enabled;
             }
         }
 
-        private void list_ents_ItemChecked(object sender, ItemCheckedEventArgs e)
+        private void List_ents_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            KeyValueGroup ent = (KeyValueGroup)e.Item.Tag;
-            if (ent.id == 0)
-            {
-                ent.enabled = true;
-                e.Item.Checked = true;
-                return;
-            }
-
-            ent.enabled = e.Item.Checked;
+            if(e.ColumnIndex == 0)
+                MessageBox.Show(map.entities[e.ColumnIndex].raw, "Raw Entity Key Values");
         }
 
         private void link_github_Click(object sender, EventArgs e)
