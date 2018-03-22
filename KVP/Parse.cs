@@ -9,8 +9,8 @@ namespace BSPLumpManager.KVP
         public int id;
         public string raw;
 
-        [DisplayName("enabled")]
-        public bool enabled { get; set; }
+        [DisplayName("split")]
+        public bool split { get; set; }
 
         [DisplayName("hammerid")]
         public string hammerid { get; set; }
@@ -39,7 +39,7 @@ namespace BSPLumpManager.KVP
                 KeyValueGroup kv_group = new KeyValueGroup() {
                     id = kvp_groups.Count,
                     raw = content,
-                    enabled = false
+                    split = false
                 };
 
                 foreach (Match tuple in pair_r.Matches(content))
@@ -60,7 +60,7 @@ namespace BSPLumpManager.KVP
                 kvp_groups.Add(kv_group);
             }
 
-            kvp_groups[0].enabled = true;
+            kvp_groups[0].split = true;
             return kvp_groups;
         }
     }

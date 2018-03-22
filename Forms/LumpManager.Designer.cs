@@ -30,8 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.button_open = new MetroFramework.Controls.MetroButton();
             this.open_file = new System.Windows.Forms.OpenFileDialog();
             this.style_manager = new MetroFramework.Components.MetroStyleManager(this.components);
@@ -122,6 +126,7 @@
             // 
             this.list_ents.AllowUserToAddRows = false;
             this.list_ents.AllowUserToDeleteRows = false;
+            this.list_ents.AllowUserToResizeRows = false;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.Transparent;
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
             dataGridViewCellStyle1.NullValue = null;
@@ -135,25 +140,32 @@
             this.col_hid,
             this.col_name,
             this.col_viewraw});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.ButtonShadow;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.list_ents.DefaultCellStyle = dataGridViewCellStyle2;
-            this.list_ents.GridColor = System.Drawing.SystemColors.ButtonFace;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.list_ents.DefaultCellStyle = dataGridViewCellStyle6;
+            this.list_ents.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.list_ents.GridColor = System.Drawing.Color.White;
             this.list_ents.Location = new System.Drawing.Point(23, 92);
             this.list_ents.MultiSelect = false;
             this.list_ents.Name = "list_ents";
             this.list_ents.ReadOnly = true;
             this.list_ents.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.list_ents.RowHeadersVisible = false;
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Black;
-            this.list_ents.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.Black;
+            this.list_ents.RowsDefaultCellStyle = dataGridViewCellStyle7;
             this.list_ents.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.list_ents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.list_ents.ShowCellErrors = false;
+            this.list_ents.ShowCellToolTips = false;
+            this.list_ents.ShowEditingIcon = false;
+            this.list_ents.ShowRowErrors = false;
             this.list_ents.Size = new System.Drawing.Size(594, 297);
             this.list_ents.TabIndex = 6;
             this.list_ents.Visible = false;
@@ -161,25 +173,44 @@
             // col_split
             // 
             this.col_split.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.col_split.DataPropertyName = "enabled";
-            this.col_split.HeaderText = "Split Entity";
+            this.col_split.DataPropertyName = "split";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.NullValue = false;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            this.col_split.DefaultCellStyle = dataGridViewCellStyle2;
+            this.col_split.HeaderText = "Lump";
             this.col_split.Name = "col_split";
             this.col_split.ReadOnly = true;
-            this.col_split.Width = 62;
+            this.col_split.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.col_split.Width = 39;
             // 
             // col_hid
             // 
             this.col_hid.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.col_hid.DataPropertyName = "hammerid";
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
+            this.col_hid.DefaultCellStyle = dataGridViewCellStyle3;
             this.col_hid.HeaderText = "Hammer ID";
             this.col_hid.Name = "col_hid";
             this.col_hid.ReadOnly = true;
+            this.col_hid.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.col_hid.Width = 85;
             // 
             // col_name
             // 
             this.col_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.col_name.DataPropertyName = "name";
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White;
+            this.col_name.DefaultCellStyle = dataGridViewCellStyle4;
             this.col_name.HeaderText = "Name";
             this.col_name.Name = "col_name";
             this.col_name.ReadOnly = true;
@@ -187,6 +218,11 @@
             // col_viewraw
             // 
             this.col_viewraw.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.White;
+            this.col_viewraw.DefaultCellStyle = dataGridViewCellStyle5;
             this.col_viewraw.HeaderText = "";
             this.col_viewraw.MinimumWidth = 100;
             this.col_viewraw.Name = "col_viewraw";

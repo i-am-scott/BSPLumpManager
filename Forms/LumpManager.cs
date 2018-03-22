@@ -1,6 +1,7 @@
 ﻿using BSPLumpManager.BSPReader;
 using BSPLumpManager.KVP;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -9,7 +10,6 @@ namespace BSPLumpManager.Forms
 {
     public partial class LumpManager : MetroFramework.Forms.MetroForm
     {
-
         public static BSP map;
 
         public LumpManager()
@@ -21,6 +21,9 @@ namespace BSPLumpManager.Forms
             list_ents.GridColor = BackColor;
             list_ents.BorderStyle = System.Windows.Forms.BorderStyle.None;
             list_ents.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+            list_ents.CellPainting += (object _, DataGridViewCellPaintingEventArgs e) => {
+                e.CellStyle.BackColor = Color.White;
+            };
         }
 
         private void LumpManager_Load(object sender, EventArgs e)
@@ -46,16 +49,17 @@ namespace BSPLumpManager.Forms
             for (var i = 0; i < map.entities.Count; i++)
             {
                 KeyValueGroup ent = map.entities[i];
-                ent.enabled = check_all.Checked;
+                ent.split = check_all.Checked;
             }
 
-            Invoke(new Action(() =>
+            Invoke(new Action(async () =>
             {
+                await Task.Delay(500);
+
+                list_ents.Visible = true;
                 list_ents.DataSource = map.entities;
                 list_ents.PerformLayout();
-
                 loading.Visible = false;
-                list_ents.Visible = true;
             }));
         }
 
@@ -85,6 +89,9 @@ namespace BSPLumpManager.Forms
             loading.Visible = true;
             textbox_filepath.Text = file_path;
 
+            if (map != null)
+                map = null;
+
             list_ents.Rows.Clear();
             Task.Run(() => {
                 LoadMapData(file_path);
@@ -102,15 +109,19 @@ namespace BSPLumpManager.Forms
         private void check_all_CheckedChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < map.entities.Count; i++)
-            {
-                map.entities[i].enabled   = i == 0 ? true : check_all.Checked;
-            }
+                map.entities[i].split = check_all.Checked;
         }
 
         private void List_ents_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.ColumnIndex == 0)
+            if(e.RowIndex == -1)
+                return;
+
+            if (e.ColumnIndex == 0)
                 MessageBox.Show(map.entities[e.RowIndex].raw, "Raw Entity Key Values");
+
+            if (e.ColumnIndex == 1)
+                map.entities[e.RowIndex].split = !map.entities[e.RowIndex].split;
         }
 
         private void link_github_Click(object sender, EventArgs e)
